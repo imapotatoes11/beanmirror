@@ -71,5 +71,5 @@ if __name__ == '__main__':
                 print(f"{message['author']['username']}: {message['content']}")
                 try: send_to_webhook(message['author']['username'], message['content'], f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png", attachments=message['attachments'])
                 except Exception as e:
-                    send_to_webhook("error", f"attachments not supported yet", "")
+                    send_to_webhook("error", f"something happened", f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png")
                 printed_message_ids.add(message['id'])
