@@ -25,12 +25,26 @@ def get_messages(channel_id, limit):
     response.raise_for_status()  # Raise an error for bad status codes
     return response.json()
 
-def send_to_webhook(author, content, avatar):
+def send_to_webhook(author, content, avatar, attachments=[]):
+    embeds = []
+
+    for attachment in attachments:
+        embed = {
+            "title": attachment.get('filename'),
+            "url": attachment.get('url')
+        }
+        # If the attachment is an image, set it as the image of the embed
+        if attachment.get('content_type', '').startswith('image/'):
+            embed["image"] = {"url": attachment.get('url')}
+        embeds.append(embed)
+
     data = {
         "username": author,
         "content": content,
-        "avatar_url": avatar
+        "avatar_url": avatar,
+        "embeds": embeds
     }
+
     response = requests.post(WEBHOOK_URL, json=data)
     response.raise_for_status()  # Raise an error for bad status codes
 
@@ -55,6 +69,7 @@ if __name__ == '__main__':
         for message in new_messages:
             if message['id'] not in printed_message_ids:
                 print(f"{message['author']['username']}: {message['content']}")
-                try: send_to_webhook(message['author']['username'], message['content'], f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png")
-                except: send_to_webhook("error", "attachments not supported yet", "")
+                try: send_to_webhook(message['author']['username'], message['content'], f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png", attachments=message['attachments'])
+                except Exception as e:
+                    send_to_webhook("error", f"attachments not supported yet", "")
                 printed_message_ids.add(message['id'])
