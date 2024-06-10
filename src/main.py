@@ -59,17 +59,20 @@ for message in initial_messages:
 
 if __name__ == '__main__':
     while True:
-        time.sleep(5)
+        try:
+            time.sleep(6)
 
-        new_messages = get_messages(CHANNEL_ID, MSG_LIMIT)
-        new_messages.reverse()  # Reverse the order for correct printing
-        new_message_ids = set(message['id'] for message in new_messages)
+            new_messages = get_messages(CHANNEL_ID, MSG_LIMIT)
+            new_messages.reverse()  # Reverse the order for correct printing
+            new_message_ids = set(message['id'] for message in new_messages)
 
-        # Identify new messages by checking which IDs are not in printed_message_ids
-        for message in new_messages:
-            if message['id'] not in printed_message_ids:
-                print(f"{message['author']['username']}: {message['content']}")
-                try: send_to_webhook(message['author']['username'], message['content'], f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png", attachments=message['attachments'])
-                except Exception as e:
-                    send_to_webhook("error", f"something happened", f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png")
-                printed_message_ids.add(message['id'])
+            # Identify new messages by checking which IDs are not in printed_message_ids
+            for message in new_messages:
+                if message['id'] not in printed_message_ids:
+                    print(f"{message['author']['username']}: {message['content']}")
+                    try: send_to_webhook(message['author']['username'], message['content'], f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png", attachments=message['attachments'])
+                    except Exception as e:
+                        send_to_webhook("error", f"something happened", f"https://cdn.discordapp.com/avatars/{message['author']['id']}/{message['author']['avatar']}.png")
+                    printed_message_ids.add(message['id'])
+        except:
+            continue
